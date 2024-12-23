@@ -1,5 +1,6 @@
 import azure.cognitiveservices.speech as speechsdk
 import sys
+import os
 def text_to_speech(text:str):
 
     # 固定音色、语调、语气、情绪等配置
@@ -12,12 +13,12 @@ def text_to_speech(text:str):
     subscription_key = "EkCylr8dhwdgjbWfQBEVgi5ODYsxUQPFOlPILPx6s1MBaLGJTsfXJQQJ99ALAC3pKaRXJ3w3AAAYACOGBIC6"
     region = "eastasia"
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
-
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     # 设置语音参数
     speech_config.speech_synthesis_voice_name = voice_name
-
+    audio_filename = os.path.join(script_dir, "../output_wav/output_audio.wav")
     # 配置音频输出到文件
-    audio_config = speechsdk.audio.AudioConfig(filename="D:\\studycode\\untitled\\output_wav\\output_audio.wav")
+    audio_config = speechsdk.audio.AudioConfig(filename=audio_filename)
 
     # 创建TTS语音合成器
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)

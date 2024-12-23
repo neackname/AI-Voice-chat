@@ -1,14 +1,16 @@
 import azure.cognitiveservices.speech as speechsdk
 import sys
+import os
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Azure Speech服务配置
 subscription_key = "EkCylr8dhwdgjbWfQBEVgi5ODYsxUQPFOlPILPx6s1MBaLGJTsfXJQQJ99ALAC3pKaRXJ3w3AAAYACOGBIC6"
 region = "eastasia"
 speech_endpoint = "https://eastasia.api.cognitive.microsoft.com/"
-
+# 获取当前文件的绝对路径
+script_dir = os.path.dirname(os.path.abspath(__file__))
 # 读取音频文件
-audio_filename = "D:\\studycode\\untitled\\input_wav\\output_audio.wav"  # 确保音频文件在当前工作目录下
+audio_filename = os.path.join(script_dir, "../input_wav/Angry.wav")  # 确保音频文件在当前工作目录下
 
 # 配置音频输入
 audio_config = speechsdk.audio.AudioConfig(filename=audio_filename)
