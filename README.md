@@ -5,7 +5,7 @@ for  users to use AI.<br />
 The requirements of this project :
 1.TTS(Text To Speech) and STT(Speech To Text) from the Azure <br />
 2.the model of vicuna. I get this model from the hugging face and its name is lmsys/vicuna-7b-v1.5<br />
-3.the model of llama.cpp . from https://github.com/ggerganov/llama.cpp .We need this to accelerate vicuna to generate reply br />
+3.the model of llama.cpp . from https://github.com/ggerganov/llama.cpp .We need this to accelerate vicuna to generate reply <br />
 4.QT to create GUI or find java Spring boot to make web
 
 ### Third commit 
