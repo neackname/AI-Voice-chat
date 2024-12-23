@@ -1,0 +1,3 @@
+D:/studycode/untitled/cmake-build-debug-mingw/CMakeFiles/Azure.dir
+D:/studycode/untitled/cmake-build-debug-mingw/CMakeFiles/edit_cache.dir
+D:/studycode/untitled/cmake-build-debug-mingw/CMakeFiles/rebuild_cache.dir
