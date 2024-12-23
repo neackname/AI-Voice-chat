@@ -11,4 +11,6 @@ it , it still slow.But i do not have any methods to slove it.But is still brough
 
 
 At third commit ,you need to open the llama.cpp server on your work environment and then it can run the code
+At this, we can commit a .wav on the input_wav , then use the code to create AI .wav on the output_wav
+
 
