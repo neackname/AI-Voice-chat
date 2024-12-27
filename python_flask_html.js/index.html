@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音聊天界面</title>
+    <style>
+        /* 设置页面背景 */
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('images/背景.png'); /* 本地图片路径 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* 使页面充满整个屏幕 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 聊天容器 */
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.8); /* 半透明背景 */
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+        }
+
+        /* 聊天框 */
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 消息布局 */
+        .chat-message {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* 用户消息样式 */
+        .chat-message.user {
+            flex-direction: row-reverse; /* 用户消息显示在右侧 */
+        }
+
+        .chat-message.user .voice-message {
+            background-color: #DCF8C6;
+            padding: 8px 15px;
+            border-radius: 15px;
+            max-width: 70%;
+            word-wrap: break-word;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 机器人的消息样式 */
+        .chat-message.bot .voice-message {
+            background-color: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 15px;
+            max-width: 70%;
+            word-wrap: break-word;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 头像样式 */
+        .chat-message img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+
+        /* 输入区域 */
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-container input {
+            width: 80%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 语音按钮 */
+        .input-container .voice-button {
+            width: 15%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .input-container .voice-button:hover {
+            background-color: #45a049;
+        }
+
+        /* 清空按钮 */
+        .clear-btn {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .clear-btn button {
+            padding: 10px 20px;
+            background-color: #FF5733;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .clear-btn button:hover {
+            background-color: #e04d2f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-box" id="chatBox">
+        <!-- 聊天记录会在这里显示 -->
+    </div>
+
+    <div class="input-container">
+        <button class="voice-button" id="recordButton" onclick="toggleRecording()">开始录音</button>
+    </div>
+
+    <div class="clear-btn">
+        <button onclick="clearChat()">清空聊天</button>
+    </div>
+</div>
+
+<script>
+    let isRecording = false;
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioUrl;
+    let audioDuration = 0; // 录音时长
+
+    // 模拟机器人响应
+    function botResponse() {
+        const responses = [
+            "你好！很高兴为你服务。",
+            "今天过得怎么样？",
+            "我可以帮你做什么？",
+            "请告诉我更多信息。"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    // 显示消息
+    function displayMessage(message, sender, duration) {
+        const chatBox = document.getElementById('chatBox');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', sender);
+
+        const avatar = sender === 'user' ? 'images/user.png' : 'images/robot.png'; // 根据消息来源选择头像
+
+        // 如果是语音消息
+        if (message instanceof Blob) {
+            const audio = URL.createObjectURL(message);
+            messageElement.innerHTML = `
+                <img src="${avatar}" alt="${sender} Avatar">
+                <div class="voice-message">
+                    <audio controls>
+                        <source src="${audio}" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <span>${duration}s</span>
+                </div>
+            `;
+        } else {
+            // 文本消息
+            messageElement.innerHTML = `
+                <img src="${avatar}" alt="${sender} Avatar">
+                <p>${message}</p>
+            `;
+        }
+
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;  // 滚动到最底部
+    }
+
+    // 切换录音状态
+    function toggleRecording() {
+        if (isRecording) {
+            // 停止录音
+            mediaRecorder.stop();
+            document.getElementById('recordButton').textContent = "开始录音";
+        } else {
+            // 开始录音
+            startRecording();
+            document.getElementById('recordButton').textContent = "停止录音";
+        }
+        isRecording = !isRecording;
+    }
+
+    // 开始录音
+    function startRecording() {
+        audioChunks = [];
+        audioDuration = 0; // 重置录音时长
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    // 显示用户录音的时长
+                    displayMessage(audioBlob, 'user', audioDuration);
+                };
+
+                mediaRecorder.start();
+                // 设置录音时长
+                const interval = setInterval(() => {
+                    audioDuration++;
+                }, 1000);
+                mediaRecorder.onstart = () => {
+                    setTimeout(() => clearInterval(interval), 10000); // 停止计时 10 秒后
+                };
+            });
+    }
+
+    // 清空聊天记录
+    function clearChat() {
+        document.getElementById('chatBox').innerHTML = '';
+    }
+</script>
+
+</body>
+</html>
